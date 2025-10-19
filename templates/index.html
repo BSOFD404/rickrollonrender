@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Connection Lost</title>
+<style>
+body {
+  font-family: sans-serif;
+  text-align: center;
+  background-color: #222;
+  color: #eee;
+  margin: 0;
+  overflow: hidden;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#connectionLost {
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 20px;
+  border-radius: 10px;
+  animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+#connectionLost h1 {
+  font-size: 2em;
+  margin-bottom: 10px;
+  animation: shake 0.5s infinite;
+}
+
+@keyframes shake {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(2deg); }
+  50% { transform: rotate(0deg); }
+  75% { transform: rotate(-2deg); }
+  100% { transform: rotate(0deg); }
+}
+
+#reconnectButton {
+  padding: 12px 24px;
+  font-size: 18px;
+  cursor: pointer;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#reconnectButton:hover {
+  background-color: #367C39;
+  transform: scale(1.1);
+}
+
+#rickrollVideo {
+  display: none;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  background-color: black;
+}
+
+#rickrollVideo video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+</style>
+</head>
+<body>
+
+<div id="connectionLost">
+  <h1>Connection Lost</h1>
+  <button id="reconnectButton">Reconnect</button>
+</div>
+
+<div id="rickrollVideo">
+  <video id="rickrollPlayer" src="{{ url_for('static', filename='rickroll.mp4') }}" autoplay muted playsinline loop></video>
+</div>
+
+<script>
+  const reconnectButton = document.getElementById('reconnectButton');
+  const connectionLostDiv = document.getElementById('connectionLost');
+  const rickrollVideoDiv = document.getElementById('rickrollVideo');
+  const rickrollPlayer = document.getElementById('rickrollPlayer');
+
+  let rickrollCount = 0;
+
+  reconnectButton.addEventListener('click', () => {
+    connectionLostDiv.style.display = 'none';
+    rickrollVideoDiv.style.display = 'block';
+    rickrollCount++;
+    sendTelegramMessage("Someone was rickrolled!");
+    rickrollPlayer.muted = false; // Try to unmute the video
+    rickrollPlayer.play(); // Ensure video plays
+  });
+
+  // Add an event listener for video errors
+  rickrollPlayer.addEventListener('error', (event) => {
+    console.error('Video playback error:', event);
+    alert('Error playing video.  Check the console for details.'); // Provide user feedback
+  });
+
+  function sendTelegramMessage(message) {
+    const telegramBotToken = '7719637928:AAFsQ6QHSH7z_GUeu6HMYl62yngKQPsRL_g';
+    const telegramChatId = '6013637983';
+    const apiUrl = `https://api.telegram.org/bot${telegramBotToken}/sendMessage`;
+
+    fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        chat_id: telegramChatId,
+        text: message,
+      }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.ok) {
+        console.log('Telegram message sent successfully!');
+      } else {
+        console.error('Error sending Telegram message:', data);
+      }
+    })
+    .catch(error => {
+      console.error('Error sending Telegram message:', error);
+    });
+  }
+
+  // Telegram Bot Command Handling (Simulated) - REMOVE THIS FOR REAL IMPLEMENTATION
+  window.addEventListener('keydown', function(event) {
+    if (event.key === '/') {
+      let command = prompt("Enter command:");
+      if (command === 'many') {
+        alert("Rickrolled count: " + rickrollCount);
+      } else if (command === 'reset' && confirm("Are you sure you want to reset the count? (Only for you!)")) {
+        rickrollCount = 0;
+        alert("Rickroll count reset!");
+      } else {
+        alert("Unknown command.");
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
