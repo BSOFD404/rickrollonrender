@@ -1,0 +1,5 @@
+flask
+threading
+webbrowser
+socket
+os
