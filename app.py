@@ -1,6 +1,6 @@
 from flask import Flask, render_template, send_from_directory
+#import webbrowser
 import threading
-import webbrowser
 import socket
 import os
 
@@ -17,8 +17,8 @@ def send_static(path):
 def index():
     return render_template('index.html')
 
-def open_browser(port):
-    webbrowser.open(f"http://localhost:{port}")
+#def open_browser(port):
+#    webbrowser.open(f"http://localhost:{port}")
 
 if __name__ == '__main__':
     # Check if the port is available
@@ -31,3 +31,4 @@ if __name__ == '__main__':
 
     threading.Timer(1, open_browser, args=[PORT]).start()
     app.run(debug=False, host='localhost', port=PORT)
+
